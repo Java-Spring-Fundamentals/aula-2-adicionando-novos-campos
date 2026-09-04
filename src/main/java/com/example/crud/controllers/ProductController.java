@@ -4,6 +4,7 @@ import com.example.crud.domain.product.Product;
 import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestCategory;
 import com.example.crud.domain.product.RequestProduct;
+import com.example.crud.domain.product.enums.DistributionCenterEnum;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,18 @@ public class ProductController {
         } else {
             throw new EntityNotFoundException();
         }
+    }
+
+    @GetMapping("/distribution-center/{distributionCenter}")
+    public ResponseEntity<List<Product>> getProductsByDistributionCenter(@PathVariable DistributionCenterEnum distributionCenter){
+        var allProducts = repository.findAllByActiveTrueAndDistributionCenter(distributionCenter);
+        return ResponseEntity.ok(allProducts);
+    }
+
+    @GetMapping("/distribution-center/{distributionCenter}/count")
+    public ResponseEntity<String> countProductsByDistributionCenter(@PathVariable DistributionCenterEnum distributionCenter){
+        var count = repository.countAllByActiveTrueAndDistributionCenter(distributionCenter);
+        return ResponseEntity.ok(distributionCenter + ": " + count);
     }
 
 }
