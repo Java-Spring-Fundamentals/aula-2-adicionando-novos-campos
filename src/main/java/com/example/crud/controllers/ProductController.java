@@ -1,5 +1,6 @@
 package com.example.crud.controllers;
 
+import com.example.crud.domain.product.DistributionCenter;
 import com.example.crud.domain.product.Product;
 import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestCategory;
@@ -12,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -46,6 +49,27 @@ public class ProductController {
         return ResponseEntity.ok(filteredProducts);
     }
 
+    @GetMapping("/distribution-center/count")
+    public ResponseEntity<Map<DistributionCenter, Long>> countProductsByDistributionCenter(){
+        Map<DistributionCenter, Long> counts = new EnumMap<>(DistributionCenter.class);
+
+        for (DistributionCenter center : DistributionCenter.values()) {
+            counts.put(center, 0L);
+        }
+        repository.countActiveByDistributionCenter()
+                .forEach(row -> counts.put(row.distributionCenter(), row.total()));
+
+        return ResponseEntity.ok(counts);
+    }
+
+    @GetMapping("/distribution-center/{distributionCenter}")
+    public ResponseEntity<List<Product>> getProductsByDistributionCenter(
+            @PathVariable DistributionCenter distributionCenter
+    ){
+        var products = repository.findAllByActiveTrueAndDistributionCenter(distributionCenter);
+        return ResponseEntity.ok(products);
+    }
+
     @PostMapping
     public ResponseEntity<Void> registerProduct(@RequestBody @Valid RequestProduct data){
         Product newProduct = new Product(data);
@@ -61,6 +85,7 @@ public class ProductController {
             Product product = optionalProduct.get();
             product.setName(data.name());
             product.setPrice(data.price());
+            product.setDistributionCenter(data.distributionCenter());
             return ResponseEntity.ok(product);
         } else {
             throw new EntityNotFoundException();
