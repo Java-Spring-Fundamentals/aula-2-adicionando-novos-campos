@@ -1,5 +1,6 @@
 package com.example.crud.domain.product;
 
+import com.example.crud.domain.product.enums.DistributionCenterEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,10 +23,14 @@ public class Product {
 
     private String category;
 
+    @Enumerated(EnumType.STRING)
+    private DistributionCenterEnum distributionCenter;
+
     public Product(RequestProduct requestProduct){
         this.name = requestProduct.name();
         this.price = requestProduct.price();
         this.category = requestProduct.category();
         this.active = true;
+        this.distributionCenter = requestProduct.distributionCenter();
     }
 }
