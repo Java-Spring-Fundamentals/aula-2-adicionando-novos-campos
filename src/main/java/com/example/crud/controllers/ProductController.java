@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.crud.domain.product.DistributionCenter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +26,14 @@ public class ProductController {
         var allProducts = repository.findAllByActiveTrue();
         return ResponseEntity.ok(allProducts);
     }
+    
+    @GetMapping("/distribution-center/{distributionCenter}")
+     public ResponseEntity<List<Product>> getProductsByDistributionCenter(
+        @PathVariable DistributionCenter distributionCenter
+    ){
+    var products = repository.findByDistributionCenterAndActiveTrue(distributionCenter);
+    return ResponseEntity.ok(products);
+   }
 
     @GetMapping("/category/{categoryAsPath}")
     public ResponseEntity<List<Product>> getProductsByCategory(
@@ -61,6 +69,7 @@ public class ProductController {
             Product product = optionalProduct.get();
             product.setName(data.name());
             product.setPrice(data.price());
+            product.setDistributionCenter(data.distributionCenter());
             return ResponseEntity.ok(product);
         } else {
             throw new EntityNotFoundException();
