@@ -1,6 +1,9 @@
 package com.example.crud.controllers;
 
 import com.example.crud.domain.product.Product;
+
+import com.example.crud.domain.product.DistributionCenter;
+
 import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestCategory;
 import com.example.crud.domain.product.RequestProduct;
@@ -26,6 +29,16 @@ public class ProductController {
         var allProducts = repository.findAllByActiveTrue();
         return ResponseEntity.ok(allProducts);
     }
+
+
+    @GetMapping("/distribution-center/(distributionCenter)")
+    public ResponseEntity<List<Product>> getProductbyDistribution(
+            @PathVariable DistributionCenter distributionCenter
+    ){
+        var products= repository.findAllByTrueAndDistributionCenter(distributionCenter);
+        return ResponseEntity.ok(products);
+    }
+
 
     @GetMapping("/category/{categoryAsPath}")
     public ResponseEntity<List<Product>> getProductsByCategory(
@@ -61,6 +74,9 @@ public class ProductController {
             Product product = optionalProduct.get();
             product.setName(data.name());
             product.setPrice(data.price());
+
+            product.setDistributionCenter(data.distributionCenter());
+
             return ResponseEntity.ok(product);
         } else {
             throw new EntityNotFoundException();
