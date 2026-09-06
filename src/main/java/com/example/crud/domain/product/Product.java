@@ -18,6 +18,13 @@ public class Product {
 
     private Integer price;
 
+<<<<<<< HEAD
+=======
+    @Enumerated(EnumType.STRING)
+    @Column(name="distribution_center")
+    private DistributionCenter distributionCenter;
+
+>>>>>>> 2e6fda9 (Adicionando o campo distributionCenter á atividade)
     private Boolean active;
 
     private String category;
@@ -26,6 +33,13 @@ public class Product {
         this.name = requestProduct.name();
         this.price = requestProduct.price();
         this.category = requestProduct.category();
+<<<<<<< HEAD
         this.active = true;
+=======
+        this.distributionCenter= requestProduct.distributionCenter();
+        this.active = true;
+
+
+>>>>>>> 2e6fda9 (Adicionando o campo distributionCenter á atividade)
     }
 }
