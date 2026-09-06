@@ -1,10 +1,9 @@
 package com.example.crud.controllers;
 
 import com.example.crud.domain.product.Product;
-<<<<<<< HEAD
-=======
+
 import com.example.crud.domain.product.DistributionCenter;
->>>>>>> 2e6fda9 (Adicionando o campo distributionCenter á atividade)
+
 import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestCategory;
 import com.example.crud.domain.product.RequestProduct;
@@ -31,8 +30,7 @@ public class ProductController {
         return ResponseEntity.ok(allProducts);
     }
 
-<<<<<<< HEAD
-=======
+
     @GetMapping("/distribution-center/(distributionCenter)")
     public ResponseEntity<List<Product>> getProductbyDistribution(
             @PathVariable DistributionCenter distributionCenter
@@ -41,7 +39,7 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
->>>>>>> 2e6fda9 (Adicionando o campo distributionCenter á atividade)
+
     @GetMapping("/category/{categoryAsPath}")
     public ResponseEntity<List<Product>> getProductsByCategory(
             @RequestHeader String categoryAsHeader,
@@ -76,10 +74,9 @@ public class ProductController {
             Product product = optionalProduct.get();
             product.setName(data.name());
             product.setPrice(data.price());
-<<<<<<< HEAD
-=======
+
             product.setDistributionCenter(data.distributionCenter());
->>>>>>> 2e6fda9 (Adicionando o campo distributionCenter á atividade)
+
             return ResponseEntity.ok(product);
         } else {
             throw new EntityNotFoundException();
