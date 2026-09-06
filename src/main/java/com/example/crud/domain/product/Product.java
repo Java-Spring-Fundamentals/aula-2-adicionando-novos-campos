@@ -18,14 +18,26 @@ public class Product {
 
     private Integer price;
 
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="distribution_center")
+    private DistributionCenter distributionCenter;
+
+
     private Boolean active;
 
     private String category;
-
     public Product(RequestProduct requestProduct){
         this.name = requestProduct.name();
         this.price = requestProduct.price();
         this.category = requestProduct.category();
+
         this.active = true;
+
+        this.distributionCenter= requestProduct.distributionCenter();
+        this.active = true;
+
+
+
     }
 }
