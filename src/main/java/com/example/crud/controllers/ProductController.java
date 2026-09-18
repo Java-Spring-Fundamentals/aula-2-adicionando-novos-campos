@@ -1,5 +1,6 @@
 package com.example.crud.controllers;
 
+import com.example.crud.domain.product.DistributionCenter;
 import com.example.crud.domain.product.Product;
 import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestCategory;
@@ -12,17 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
 public class ProductController {
+
     @Autowired
     private ProductRepository repository;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(){
+    public ResponseEntity<List<Product>> getAllProducts() {
         var allProducts = repository.findAllByActiveTrue();
         return ResponseEntity.ok(allProducts);
     }
@@ -33,51 +37,95 @@ public class ProductController {
             @PathVariable String categoryAsPath,
             @RequestBody @Valid RequestCategory categoryAsBody,
             @RequestParam String categoryAsParam
-    ){
+    ) {
         var allProducts = repository.findAllByActiveTrue();
         List<Product> filteredProducts = new ArrayList<>();
 
         for (int i = 0; i < allProducts.size(); i++) {
             Product product = allProducts.get(i);
+
             if (categoryAsParam.equals(product.getCategory())) {
                 filteredProducts.add(product);
             }
         }
+
         return ResponseEntity.ok(filteredProducts);
     }
 
+    @GetMapping("/distribution-center/{distributionCenter}")
+    public ResponseEntity<List<Product>> getProductsByDistributionCenter(
+            @PathVariable DistributionCenter distributionCenter
+    ) {
+        var products = repository
+                .findAllByDistributionCenterAndActiveTrue(distributionCenter);
+
+        return ResponseEntity.ok(products);
+    }
+
     @PostMapping
-    public ResponseEntity<Void> registerProduct(@RequestBody @Valid RequestProduct data){
+    public ResponseEntity<Void> registerProduct(
+            @RequestBody @Valid RequestProduct data
+    ) {
         Product newProduct = new Product(data);
         repository.save(newProduct);
+
         return ResponseEntity.ok().build();
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<Product> updateProduct(@RequestBody @Valid RequestProduct data){
+    public ResponseEntity<Product> updateProduct(
+            @RequestBody @Valid RequestProduct data
+    ) {
         Optional<Product> optionalProduct = repository.findById(data.id());
+
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
+
             product.setName(data.name());
             product.setPrice(data.price());
+            product.setCategory(data.category());
+            product.setDistributionCenter(data.distributionCenter());
+
             return ResponseEntity.ok(product);
-        } else {
-            throw new EntityNotFoundException();
         }
+
+        throw new EntityNotFoundException();
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<Void> deleteProduct(@PathVariable String id){
+    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         Optional<Product> optionalProduct = repository.findById(id);
+
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
             product.setActive(false);
+
             return ResponseEntity.noContent().build();
-        } else {
-            throw new EntityNotFoundException();
         }
+
+        throw new EntityNotFoundException();
     }
 
-}
+    @GetMapping("/distribution-center/count")
+    public ResponseEntity<Map<DistributionCenter, Long>>
+    countActiveProductsByDistributionCenter() {
+
+        Map<DistributionCenter, Long> result =
+                new EnumMap<>(DistributionCenter.class);
+
+        for (DistributionCenter distributionCenter
+                : DistributionCenter.values()) {
+
+            long quantity = repository
+                    .countByDistributionCenterAndActiveTrue(
+                            distributionCenter
+                    );
+
+            result.put(distributionCenter, quantity);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+}   

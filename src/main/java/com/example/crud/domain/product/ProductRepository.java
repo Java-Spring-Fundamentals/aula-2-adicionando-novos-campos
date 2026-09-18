@@ -6,4 +6,10 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> findAllByActiveTrue();
+    List<Product> findAllByDistributionCenterAndActiveTrue(
+        DistributionCenter distributionCenter
+    );
+    long countByDistributionCenterAndActiveTrue(    
+        DistributionCenter distributionCenter
+    );
 }
