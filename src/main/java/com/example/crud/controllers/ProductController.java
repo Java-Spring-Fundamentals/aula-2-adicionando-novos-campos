@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import com.example.crud.domain.product.DistributionCenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,12 @@ public class ProductController {
             }
         }
         return ResponseEntity.ok(filteredProducts);
+    }
+
+    @GetMapping("/distribution-center/{distributionCenter}")
+    public ResponseEntity<List<Product>> getProductsByDistributionCenter(@PathVariable DistributionCenter distributionCenter){
+        var products = repository.findAllByDistributionCenterAndActiveTrue(distributionCenter);
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping
