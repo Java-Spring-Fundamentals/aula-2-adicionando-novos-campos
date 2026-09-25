@@ -61,6 +61,8 @@ public class ProductController {
             Product product = optionalProduct.get();
             product.setName(data.name());
             product.setPrice(data.price());
+            product.setCategory(data.category());
+            product.setDistributionCenter(data.distributionCenter());
             return ResponseEntity.ok(product);
         } else {
             throw new EntityNotFoundException();
@@ -79,5 +81,13 @@ public class ProductController {
             throw new EntityNotFoundException();
         }
     }
+
+    @GetMapping("/distribution-center/{distributionCenter}")
+    public ResponseEntity getProductsByDistributionCenter(
+        @PathVariable DistributionCenter distributionCenter
+) {
+    var products = repository.findAllByActiveTrueAndDistributionCenter(distributionCenter);
+    return ResponseEntity.ok(products);
+}
 
 }
